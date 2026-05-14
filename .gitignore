@@ -1,3 +1,4 @@
 node_modules/
+package-lock.json
 data/raw_registrations.json
 data/enriched_leads.json

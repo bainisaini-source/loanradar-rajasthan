@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoanRadar — Rajasthan</title>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.2);
+    --text: #1a1a18;
+    --text2: #5a5a56;
+    --text3: #9a9a94;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --blue-text: #0C447C;
+    --green: #3B6D11;
+    --green-bg: #EAF3DE;
+    --green-text: #27500A;
+    --amber: #BA7517;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --red-bg: #FCEBEB;
+    --red-text: #791F1F;
+    --radius: 10px;
+    --radius-sm: 7px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242420;
+      --surface2: #2e2e2a;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --text: #e8e6e0;
+      --text2: #9a9890;
+      --text3: #5a5a54;
+      --blue-bg: #0c2a42;
+      --blue-text: #7ab4e8;
+      --green-bg: #162b08;
+      --green-text: #8ec854;
+      --amber-bg: #2e1e04;
+      --amber-text: #f0b840;
+      --red-bg: #2e1010;
+      --red-text: #f08080;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  .app { max-width: 1100px; margin: 0 auto; padding: 0 16px 40px; }
+
+  /* TOP BAR */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .brand-name { font-size: 16px; font-weight: 600; color: var(--text); }
+  .brand-sub { font-size: 12px; color: var(--text2); }
+  .live-badge { display: flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 20px; background: var(--green-bg); font-size: 12px; color: var(--green-text); font-weight: 500; }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* METRICS */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 600px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .metric-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* PIPELINE */
+  .pipeline { display: flex; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+  .stage { flex: 1; background: var(--surface); padding: 10px 14px; text-align: center; }
+  .stage-num { font-size: 20px; font-weight: 600; color: var(--text); }
+  .stage-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* TABS + CONTROLS */
+  .controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .tabs { display: flex; gap: 4px; }
+  .tab { padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text2); transition: all 0.15s; }
+  .tab.active { background: var(--blue-bg); color: var(--blue-text); border-color: transparent; }
+  .tab:hover:not(.active) { background: var(--surface2); }
+  .refresh-btn { display: flex; align-items: center; gap: 5px; padding: 6px 13px; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); font-weight: 500; }
+  .refresh-btn:hover { background: var(--surface2); }
+
+  /* STATUS BAR */
+  .status-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 12px; color: var(--text2); }
+
+  /* LEAD TABLE */
+  .table-header { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.8fr 0.7fr 0.9fr; gap: 8px; padding: 6px 14px; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; }
+  @media (max-width: 700px) { .table-header { display: none; } }
+
+  .lead-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
+  .lead-card:hover { border-color: var(--border2); }
+  .lead-card.selected { border-color: var(--blue); background: var(--blue-bg); }
+  .lead-card.called { opacity: 0.6; }
+
+  .lead-row { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.8fr 0.7fr 0.9fr; gap: 8px; align-items: center; }
+  @media (max-width: 700px) {
+    .lead-row { grid-template-columns: 1fr auto; }
+    .lead-city, .lead-signal, .lead-age { display: none; }
+  }
+  .lead-name { font-weight: 600; font-size: 13px; color: var(--text); }
+  .lead-type { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .lead-city-tag { font-size: 12px; color: var(--text2); }
+  .signal-badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+  .sig-both { background: var(--amber-bg); color: var(--amber-text); }
+  .sig-mca { background: var(--blue-bg); color: var(--blue-text); }
+  .sig-gst { background: var(--green-bg); color: var(--green-text); }
+  .age-text { font-size: 12px; color: var(--text3); }
+  .score-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+  .score-hot { background: var(--red-bg); color: var(--red-text); }
+  .score-warm { background: var(--amber-bg); color: var(--amber-text); }
+  .score-cold { background: var(--surface2); color: var(--text3); }
+  .call-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: var(--blue-bg); color: var(--blue-text); white-space: nowrap; }
+  .call-btn.done { background: var(--green-bg); color: var(--green-text); }
+  .call-btn:hover { opacity: 0.8; }
+
+  /* DETAIL DRAWER */
+  .detail { background: var(--surface); border: 1px solid var(--blue); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 6px; display: none; }
+  .detail.open { display: block; }
+  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .detail-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .detail-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .close-btn { padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid var(--border2); background: transparent; color: var(--text2); }
+  .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .detail-grid { grid-template-columns: repeat(2, 1fr); } }
+  .detail-field { }
+  .field-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .field-val { font-size: 13px; font-weight: 500; color: var(--text); }
+  .field-val.phone { font-size: 15px; color: var(--blue); }
+  .field-val.mono { font-family: monospace; font-size: 11px; }
+  .ai-box { background: var(--surface2); border-left: 3px solid var(--blue); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px; margin-bottom: 14px; }
+  .ai-label { font-size: 11px; color: var(--blue-text); font-weight: 600; margin-bottom: 5px; }
+  .ai-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .score-reasons { font-size: 11px; color: var(--text3); margin-bottom: 14px; }
+  .score-reason-item { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 7px; background: var(--surface2); border-radius: 10px; }
+  .detail-actions { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .btn-primary { padding: 8px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: var(--blue); color: white; }
+  .btn-secondary { padding: 8px 18px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; border: 1px solid var(--border2); background: transparent; color: var(--text2); }
+  textarea.notes { width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 12px; resize: vertical; min-height: 60px; font-family: inherit; margin-top: 10px; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text3); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-title { font-size: 15px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 40px; color: var(--text3); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🏦</div>
+      <div>
+        <div class="brand-name">LoanRadar — Rajasthan</div>
+        <div class="brand-sub">AI Lead Intelligence Platform</div>
+      </div>
+    </div>
+    <div class="live-badge" id="status-badge">
+      <div class="pulse"></div>
+      <span id="status-text">Loading...</span>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Fresh leads today</div>
+      <div class="metric-value" id="m-total">—</div>
+      <div class="metric-sub">New registrations</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">🔥 Hot leads</div>
+      <div class="metric-value" id="m-hot">—</div>
+      <div class="metric-sub">Call first</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Phones found</div>
+      <div class="metric-value" id="m-phones">—</div>
+      <div class="metric-sub">Ready to call</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Called today</div>
+      <div class="metric-value" id="m-called">0</div>
+      <div class="metric-sub" id="m-called-sub">Keep going</div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="stage"><div class="stage-num" id="p-new">—</div><div class="stage-label">New today</div></div>
+    <div class="stage"><div class="stage-num" id="p-pending">—</div><div class="stage-label">To call</div></div>
+    <div class="stage"><div class="stage-num" id="p-called">0</div><div class="stage-label">Called</div></div>
+    <div class="stage"><div class="stage-num" id="p-hot">—</div><div class="stage-label">Hot priority</div></div>
+  </div>
+
+  <div class="status-bar" id="status-bar">
+    <span>🤖</span>
+    <span id="status-detail">Loading leads...</span>
+  </div>
+
+  <div class="controls">
+    <div class="tabs" id="tabs">
+      <button class="tab active" onclick="setFilter('all', this)">All</button>
+      <button class="tab" onclick="setFilter('hot', this)">🔥 Hot</button>
+      <button class="tab" onclick="setFilter('warm', this)">★ Warm</button>
+      <button class="tab" onclick="setFilter('cold', this)">Cold</button>
+      <button class="tab" onclick="setFilter('called', this)">Called</button>
+    </div>
+    <button class="refresh-btn" onclick="loadLeads()">↺ Refresh</button>
+  </div>
+
+  <div class="table-header">
+    <span>Business</span>
+    <span>City</span>
+    <span>Signal</span>
+    <span>Registered</span>
+    <span>Score</span>
+    <span>Action</span>
+  </div>
+
+  <div id="leads-list"></div>
+
+</div>
+
+<script>
+let allLeads = [];
+let currentFilter = 'all';
+let selectedId = null;
+let calledIds = new Set(JSON.parse(localStorage.getItem('calledIds') || '[]'));
+let notes = JSON.parse(localStorage.getItem('notes') || '{}');
+
+async function loadLeads() {
+  document.getElementById('leads-list').innerHTML = '<div class="loading">Loading today\'s leads...</div>';
+  document.getElementById('status-text').textContent = 'Refreshing...';
+
+  try {
+    // Load from leads_today.json (generated by the pipeline)
+    const res = await fetch('https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/loanradar-rajasthan/main/data/leads_today.json?t=' + Date.now());
+    if (!res.ok) throw new Error('File not found');
+    const data = await res.json();
+
+    allLeads = data.leads || [];
+
+    // Update metrics
+    document.getElementById('m-total').textContent = data.totalSelected || allLeads.length;
+    document.getElementById('m-hot').textContent = data.hotLeads || allLeads.filter(l => l.tier === 'hot').length;
+    document.getElementById('m-phones').textContent = data.phonesFound || allLeads.filter(l => l.phoneAvailable).length;
+
+    document.getElementById('p-new').textContent = allLeads.length;
+    document.getElementById('p-hot').textContent = allLeads.filter(l => l.tier === 'hot').length;
+
+    const date = data.date || new Date().toISOString().split('T')[0];
+    document.getElementById('status-text').textContent = `Live · Updated ${formatDate(data.generatedAt)}`;
+    document.getElementById('status-detail').textContent =
+      `🤖 AI scanned MCA + GST Rajasthan registrations · ${allLeads.length} leads surfaced on ${date}`;
+
+    updateCalledMetrics();
+    renderLeads();
+
+  } catch (err) {
+    // No data file yet — show demo leads
+    showDemoData();
+  }
+}
+
+function showDemoData() {
+  // Demo data shown before first pipeline run
+  allLeads = [
+    { id:1, name:'Sharma Textile Traders', businessType:'Textile / Wholesale', city:'Jaipur', source:'MCA + GST', registeredAgo:'2 days ago', score:9, tier:'hot', ownerName:'Ramesh Sharma', phone:'9812340001', phoneAvailable:true, estimatedLoanRange:'₹8–12L', loanType:'Business Loan', aiInsight:'New textile business in Jaipur needs working capital for stock procurement. High urgency — call within 24 hours.', scoreReasons:['Found in both MCA and GST','Very fresh registration (2 days ago)','Textile / Wholesale = high capital requirement','Phone number found'] },
+    { id:2, name:'Rajput Construction Co.', businessType:'Construction / Infra', city:'Jodhpur', source:'MCA', registeredAgo:'3 days ago', score:8, tier:'hot', ownerName:'Amit Rajput', phone:'9812340002', phoneAvailable:true, estimatedLoanRange:'₹20–40L', loanType:'Business Loan', aiInsight:'Construction company registered 3 days ago. First project capital needed. High-value opportunity.', scoreReasons:['Found in MCA','Recent registration','Construction = high capital requirement','Phone found'] },
+    { id:3, name:'Meena General Stores', businessType:'Retail', city:'Kota', source:'GST', registeredAgo:'1 day ago', score:8, tier:'hot', ownerName:'Rekha Meena', phone:'9812340003', phoneAvailable:true, estimatedLoanRange:'₹3–5L', loanType:'Business Loan', aiInsight:'Retail store just opened. Stock purchase loan needed immediately.', scoreReasons:['Found in GST','Very fresh (1 day ago)','Retail setup','Phone found'] },
+    { id:4, name:'Joshi Digital Services', businessType:'IT / Technology', city:'Jaipur', source:'GST', registeredAgo:'4 days ago', score:5, tier:'warm', ownerName:'Priya Joshi', phone:'9812340004', phoneAvailable:true, estimatedLoanRange:'₹2–4L', loanType:'Personal / Business Loan', aiInsight:'IT services firm — likely needs equipment or working capital. Softer pitch recommended.', scoreReasons:['Found in GST','4 days old','IT = moderate capital need'] },
+    { id:5, name:'Agarwal Pharma Dist.', businessType:'Pharma / Medical', city:'Ajmer', source:'MCA + GST', registeredAgo:'5 days ago', score:7, tier:'hot', ownerName:'Dinesh Agarwal', phone:'9812340005', phoneAvailable:true, estimatedLoanRange:'₹10–15L', loanType:'Business Loan', aiInsight:'Pharma distribution setup — stock credit cycles create immediate capital need.', scoreReasons:['Both MCA + GST','5 days old','Pharma = high capital'] },
+  ];
+
+  document.getElementById('m-total').textContent = allLeads.length;
+  document.getElementById('m-hot').textContent = allLeads.filter(l => l.tier==='hot').length;
+  document.getElementById('m-phones').textContent = allLeads.filter(l => l.phoneAvailable).length;
+  document.getElementById('p-new').textContent = allLeads.length;
+  document.getElementById('p-hot').textContent = allLeads.filter(l => l.tier==='hot').length;
+  document.getElementById('status-text').textContent = 'Demo mode';
+  document.getElementById('status-detail').textContent =
+    '⚠️ Demo data shown. Run "node scheduler.js --now" to load real leads from MCA + GST.';
+
+  updateCalledMetrics();
+  renderLeads();
+}
+
+function renderLeads() {
+  const container = document.getElementById('leads-list');
+  let filtered = allLeads.filter(l => {
+    if (currentFilter === 'hot') return l.tier === 'hot';
+    if (currentFilter === 'warm') return l.tier === 'warm';
+    if (currentFilter === 'cold') return l.tier === 'cold';
+    if (currentFilter === 'called') return calledIds.has(l.id);
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No leads in this category</div><div class="empty-sub">Try a different filter above</div></div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach(lead => {
+    const isCalled = calledIds.has(lead.id);
+    const isSelected = selectedId === lead.id;
+
+    const card = document.createElement('div');
+    card.className = `lead-card${isSelected ? ' selected' : ''}${isCalled ? ' called' : ''}`;
+    card.id = `card-${lead.id}`;
+    card.innerHTML = `
+      <div class="lead-row" onclick="selectLead(${lead.id})">
+        <div>
+          <div class="lead-name">${lead.name}</div>
+          <div class="lead-type">${lead.businessType}</div>
+        </div>
+        <div class="lead-city lead-city-tag">📍 ${lead.city}</div>
+        <div class="lead-signal">
+          <span class="signal-badge ${lead.source === 'MCA + GST' ? 'sig-both' : lead.source === 'MCA' ? 'sig-mca' : 'sig-gst'}">
+            ${lead.source}
+          </span>
+        </div>
+        <div class="lead-age age-text">${lead.registeredAgo}</div>
+        <div>
+          <div class="score-circle ${lead.tier === 'hot' ? 'score-hot' : lead.tier === 'warm' ? 'score-warm' : 'score-cold'}">
+            ${lead.tier === 'hot' ? '🔥' : lead.tier === 'warm' ? '★' : lead.score}
+          </div>
+        </div>
+        <div>
+          <button class="call-btn${isCalled ? ' done' : ''}" onclick="event.stopPropagation(); toggleCalled(${lead.id})">
+            ${isCalled ? '✓ Called' : 'Call'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+
+    // If this lead is selected, inject detail panel after card
+    if (isSelected) {
+      const detail = buildDetailPanel(lead);
+      container.appendChild(detail);
+    }
+  });
+}
+
+function buildDetailPanel(lead) {
+  const isCalled = calledIds.has(lead.id);
+  const div = document.createElement('div');
+  div.className = 'detail open';
+  div.id = `detail-${lead.id}`;
+  div.innerHTML = `
+    <div class="detail-top">
+      <div>
+        <div class="detail-title">${lead.name}</div>
+        <div class="detail-sub">${lead.city}, Rajasthan · ${lead.businessType}</div>
+      </div>
+      <button class="close-btn" onclick="closeDetail()">✕ Close</button>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="field-label">Owner</div><div class="field-val">${lead.ownerName || 'Check MCA portal'}</div></div>
+      <div class="detail-field"><div class="field-label">Phone</div><div class="field-val phone">${lead.phone || '—  Not found'}</div></div>
+      <div class="detail-field"><div class="field-label">Loan type</div><div class="field-val">${lead.loanType || 'Business Loan'}</div></div>
+      <div class="detail-field"><div class="field-label">Est. amount</div><div class="field-val">${lead.estimatedLoanRange}</div></div>
+      <div class="detail-field"><div class="field-label">Signal source</div><div class="field-val">${lead.source}</div></div>
+      <div class="detail-field"><div class="field-label">Registered</div><div class="field-val">${lead.registeredAgo}</div></div>
+      ${lead.gstin ? `<div class="detail-field"><div class="field-label">GSTIN</div><div class="field-val mono">${lead.gstin}</div></div>` : ''}
+      ${lead.cin ? `<div class="detail-field"><div class="field-label">CIN</div><div class="field-val mono">${lead.cin}</div></div>` : ''}
+    </div>
+    <div class="ai-box">
+      <div class="ai-label">🤖 AI Call Script</div>
+      <div class="ai-text">${lead.aiInsight || 'Fresh business registration — likely needs capital for setup and operations.'}</div>
+    </div>
+    ${lead.scoreReasons ? `<div class="score-reasons">${lead.scoreReasons.map(r => `<span class="score-reason-item">${r}</span>`).join('')}</div>` : ''}
+    <textarea class="notes" id="notes-${lead.id}" placeholder="Add call notes here..." oninput="saveNote(${lead.id}, this.value)">${notes[lead.id] || ''}</textarea>
+    <div class="detail-actions">
+      <button class="btn-primary" onclick="toggleCalled(${lead.id})">${isCalled ? '↩ Mark uncalled' : '📞 Mark as called'}</button>
+      <button class="btn-secondary" onclick="closeDetail()">Close</button>
+    </div>
+  `;
+  return div;
+}
+
+function selectLead(id) {
+  selectedId = selectedId === id ? null : id;
+  renderLeads();
+  if (selectedId) {
+    const el = document.getElementById(`card-${id}`);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+function closeDetail() {
+  selectedId = null;
+  renderLeads();
+}
+
+function toggleCalled(id) {
+  if (calledIds.has(id)) calledIds.delete(id);
+  else calledIds.add(id);
+  localStorage.setItem('calledIds', JSON.stringify([...calledIds]));
+  updateCalledMetrics();
+  renderLeads();
+}
+
+function saveNote(id, val) {
+  notes[id] = val;
+  localStorage.setItem('notes', JSON.stringify(notes));
+}
+
+function updateCalledMetrics() {
+  const count = calledIds.size;
+  document.getElementById('m-called').textContent = count;
+  document.getElementById('m-called-sub').textContent = count === 0 ? 'Start calling!' : `${count} done today`;
+  document.getElementById('p-called').textContent = count;
+  document.getElementById('p-pending').textContent = Math.max(0, allLeads.length - count);
+  document.querySelectorAll('.tab')[4].textContent = `Called (${count})`;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  selectedId = null;
+  renderLeads();
+}
+
+function formatDate(iso) {
+  if (!iso) return 'today';
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ' today';
+}
+
+// Load on start
+loadLeads();
+</script>
+</body>
+</html>

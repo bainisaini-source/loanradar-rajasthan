@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-05-27",
+    "scanned": 19,
+    "selected": 10,
+    "hot": 10,
+    "warm": 0,
+    "phones": 10,
+    "ranAt": "2026-05-27T14:43:32.877Z"
+  },
+  {
     "date": "2026-05-25",
     "scanned": 18,
     "selected": 10,
